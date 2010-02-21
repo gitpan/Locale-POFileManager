@@ -1,5 +1,5 @@
 package Locale::POFileManager::File;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use Moose;
 
 use MooseX::Types::Path::Class qw(File);
@@ -14,7 +14,7 @@ Locale::POFileManager::File - A single .po file
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 

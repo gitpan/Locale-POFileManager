@@ -1,5 +1,5 @@
 ---
-abstract: ''
+abstract: 'Helpers for keeping a set of related .po files in sync'
 author:
   - 'Jesse Luehrs <doy at tozt dot net>'
 generated_by: 'Dist::Zilla version 1.100160'
@@ -10,9 +10,10 @@ meta-spec:
 name: Locale-POFileManager
 requires:
   ExtUtils::MakeMaker: 6.11
+  File::Temp: 0.19
   List::MoreUtils: 0
   Locale::PO: 0
   Moose: 0.90
   MooseX::Types::Path::Class: 0
   Scalar::Util: 0
-version: 0.01
+version: 0.02

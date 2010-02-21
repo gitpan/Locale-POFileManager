@@ -1,5 +1,5 @@
 package Locale::POFileManager;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use Moose;
 use MooseX::Types::Path::Class qw(Dir);
 use Scalar::Util qw(reftype weaken);
@@ -10,7 +10,7 @@ Locale::POFileManager - Helpers for keeping a set of related .po files in sync
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 

@@ -15,17 +15,18 @@ my %WriteMakefileArgs = (
                        'NAME' => 'Locale::POFileManager',
                        'DISTNAME' => 'Locale-POFileManager',
                        'AUTHOR' => 'Jesse Luehrs <doy at tozt dot net>',
-                       'ABSTRACT' => '',
+                       'ABSTRACT' => 'Helpers for keeping a set of related .po files in sync',
                        'EXE_FILES' => [
                                         'bin/po_find_missing',
                                         'bin/po_add_stubs'
                                       ],
-                       'VERSION' => '0.01',
+                       'VERSION' => '0.02',
                        'LICENSE' => 'perl',
                        'PREREQ_PM' => {
                                         'Scalar::Util' => '0',
                                         'MooseX::Types::Path::Class' => '0',
                                         'ExtUtils::MakeMaker' => '6.11',
+                                        'File::Temp' => '0.19',
                                         'Locale::PO' => '0',
                                         'List::MoreUtils' => '0',
                                         'Moose' => '0.90'

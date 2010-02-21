@@ -1,9 +1,9 @@
 
 
 This archive contains the distribution Locale-POFileManager, version
-0.01:
+0.02:
 
-  
+  Helpers for keeping a set of related .po files in sync
 
 This software is copyright (c) 2010 by Jesse Luehrs.
 
