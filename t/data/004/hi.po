@@ -4,6 +4,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "foo"
-msgstr "foo"
+msgid "मेरा नाम"
+msgstr "मेरा नाम"
 
+msgid "नमस्ते"
+msgstr "नमस्ते"

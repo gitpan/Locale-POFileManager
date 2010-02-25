@@ -4,12 +4,24 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+# first section
+
 msgid "foo"
 msgstr "foo"
 
+msgid "quux"
+msgstr "quux"
+
+# stuff for bar
 msgid "bar"
 msgstr "bar"
+
+# second section
 
 msgid "baz"
 msgstr "baz"
 
+msgid "quuux"
+msgstr "quuux"
+
+# stuff to do

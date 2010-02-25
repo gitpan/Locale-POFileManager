@@ -12,10 +12,16 @@ lib/Locale/POFileManager/File.pm
 t/000-load.t
 t/001-basic.t
 t/002-create.t
+t/003-comments.t
+t/004-utf8.t
 t/data/001/de.po
 t/data/001/en.po
 t/data/001/hi.po
 t/data/001/ru.po
 t/data/002/en.po
+t/data/003/de.po
+t/data/003/en.po
+t/data/004/en.po
+t/data/004/hi.po
 t/release-pod-coverage.t
 t/release-pod-syntax.t

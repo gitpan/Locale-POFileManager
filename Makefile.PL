@@ -20,14 +20,14 @@ my %WriteMakefileArgs = (
                                         'bin/po_find_missing',
                                         'bin/po_add_stubs'
                                       ],
-                       'VERSION' => '0.02',
+                       'VERSION' => '0.03',
                        'LICENSE' => 'perl',
                        'PREREQ_PM' => {
                                         'Scalar::Util' => '0',
                                         'MooseX::Types::Path::Class' => '0',
+                                        'Locale::Maketext::Lexicon' => '0',
                                         'ExtUtils::MakeMaker' => '6.11',
                                         'File::Temp' => '0.19',
-                                        'Locale::PO' => '0',
                                         'List::MoreUtils' => '0',
                                         'Moose' => '0.90'
                                       }

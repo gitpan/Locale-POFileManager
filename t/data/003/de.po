@@ -4,12 +4,19 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "foo"
-msgstr "foo"
+# erste Kapitel
 
+msgid "foo"
+msgstr "oof"
+
+# Übersetzung für bar
 msgid "bar"
-msgstr "bar"
+msgstr "rab"
+
+# zweite Kapitel
 
 msgid "baz"
-msgstr "baz"
+msgstr "zab"
 
+
+# etwas zu machen

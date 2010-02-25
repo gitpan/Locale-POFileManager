@@ -12,8 +12,8 @@ requires:
   ExtUtils::MakeMaker: 6.11
   File::Temp: 0.19
   List::MoreUtils: 0
-  Locale::PO: 0
+  Locale::Maketext::Lexicon: 0
   Moose: 0.90
   MooseX::Types::Path::Class: 0
   Scalar::Util: 0
-version: 0.02
+version: 0.03

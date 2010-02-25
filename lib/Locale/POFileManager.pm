@@ -1,5 +1,5 @@
 package Locale::POFileManager;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use Moose;
 use MooseX::Types::Path::Class qw(Dir);
 use Scalar::Util qw(reftype weaken);
@@ -10,7 +10,7 @@ Locale::POFileManager - Helpers for keeping a set of related .po files in sync
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -30,7 +30,7 @@ version 0.02
 This module contains helpers for managing a set of gettext translation files,
 including tools to keep the translation files in sync, adding new translation
 files, and manipulating the translations contained in the files. It is based on
-the L<Locale::PO> parser library.
+the L<Locale::Maketext::Lexicon> parser library.
 
 =cut
 
@@ -159,9 +159,8 @@ sub stub_msgstr {
         my %args = @_;
         my $canonical_msgstr;
         $canonical_msgstr =
-            $weakself->canonical_language_file->entry_for($args{msgid})->msgstr
+            $weakself->canonical_language_file->msgstr($args{msgid})
                 if $weakself;
-        $canonical_msgstr =~ s/^"|"$//g if defined($canonical_msgstr);
         return $msgstr->(
             %args,
             defined($canonical_msgstr) ? (canonical_msgstr => $canonical_msgstr) : (),
@@ -205,20 +204,33 @@ sub add_language {
     confess("Can't overwrite existing language file for $lang")
         if -e $file->stringify;
 
+    my $canon_pofile = $self->canonical_language_file;
+
+    my $fh = $file->openw;
+    $fh->binmode(':utf8');
+    $fh->print(qq{msgid ""\n});
+    $fh->print(qq{msgstr ""\n});
+    for my $header_key ($canon_pofile->headers) {
+        $fh->print(qq{"$header_key: }
+                 . $canon_pofile->header($header_key)
+                 . qq{\\n"\n});
+    }
+    $fh->print(qq{\n});
+    $fh->close;
+
     my $msgstr = $self->stub_msgstr;
     my $pofile = Locale::POFileManager::File->new(
         file => $file,
         defined($msgstr) ? (stub_msgstr => $msgstr) : (),
     );
-    $pofile->add_entry($self->canonical_language_file->entry_for(''));
-    $pofile->save;
+
 
     $self->_add_file($pofile);
 }
 
 =head2 language_file
 
-Returns the L<Locale::POFileManager> object corresponding to the given
+Returns the L<Locale::POFileManager::File> object corresponding to the given
 language.
 
 =cut
@@ -234,7 +246,7 @@ sub language_file {
 
 =head2 canonical_language_file
 
-Returns the L<Locale::POFileManager> object corresponding to the
+Returns the L<Locale::POFileManager::File> object corresponding to the
 C<canonical_language>.
 
 =cut
@@ -294,9 +306,11 @@ L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Locale-POFileManager>.
 
 =head1 SEE ALSO
 
-L<Locale::PO>
+L<Locale::Maketext::Lexicon>
 
 L<Locale::Maketext>
+
+L<Locale::PO>
 
 =head1 SUPPORT
 

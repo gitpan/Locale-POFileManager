@@ -1,12 +1,16 @@
 package Locale::POFileManager::File;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use Moose;
 
 use MooseX::Types::Path::Class qw(File);
 use List::MoreUtils qw(any);
 use List::Util qw(first);
-use Locale::PO;
+use Locale::Maketext::Lexicon::Gettext;
 use Scalar::Util qw(reftype);
+
+require Locale::Maketext::Lexicon;
+Locale::Maketext::Lexicon::set_option(decode => 1);
+Locale::Maketext::Lexicon::set_option(allow_empty => 1);
 
 =head1 NAME
 
@@ -14,7 +18,7 @@ Locale::POFileManager::File - A single .po file
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -51,7 +55,7 @@ Accepts a hash of arguments:
 
 =item file
 
-The name of the file this represents. Required.
+The name of the file this represents. Required, and must exist.
 
 =item stub_msgstr
 
@@ -88,82 +92,99 @@ has stub_msgstr => (
     isa      => 'Str|CodeRef',
 );
 
-=head2 entries
-
-Returns a list of L<Locale::PO> objects corresponding to translation entries in
-the file.
-
-=cut
-
-=head2 add_entry
-
-Adds a new translation entry to the file. This can be provided either as a
-L<Locale::PO> object directly, or as a hash of options to pass to the
-L<Locale::PO> constructor (except without the leading dashes).
-
-=cut
-
 =head2 msgids
 
 Returns a list of msgids found in the file.
 
+=head2 has_msgid
+
+Returns true if the given msgid is found in the file, and false otherwise.
+
+=head2 msgstr
+
+Returns the msgstr that corresponds with the given msgid.
+
 =cut
 
-has entries => (
-    traits   => [qw(Array)],
-    isa      => 'ArrayRef[Locale::PO]',
-    lazy     => 1,
-    builder  => '_build_entries',
-    init_arg => undef,
-    handles  => {
-        entries    => 'elements',
-        _add_entry => 'push',
-        msgids     =>
-            [ map => sub { my $m = $_->msgid; $m =~ s/^"|"$//g; $m } ],
+has lexicon => (
+    traits  => [qw(Hash)],
+    isa     => 'HashRef',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return Locale::Maketext::Lexicon::Gettext->parse($self->file->slurp);
+    },
+    handles => {
+        msgids             => 'keys',
+        has_msgid          => 'exists',
+        _remove_msgid      => 'delete',
+        msgstr             => 'get',
+        _add_lexicon_entry => 'set',
     },
 );
 
-sub _build_entries {
-    my $self = shift;
-    my $filename = $self->file->stringify;
+=head2 headers
 
-    return (-r $filename) ? Locale::PO->load_file_asarray($filename) : [];
+Returns the list of header entries.
+
+=head2 header
+
+Returns the value of the given header entry.
+
+=cut
+
+has headers => (
+    traits  => [qw(Hash)],
+    isa     => 'HashRef',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $ret = {};
+        $ret->{$_} = $self->_remove_msgid("__$_")
+            for map { s/^__//; $_ } grep { /^__/ } $self->msgids;
+        return $ret;
+    },
+    handles => {
+        headers => 'keys',
+        header  => 'get',
+    },
+);
+
+sub BUILD {
+    my $self = shift;
+
+    my $filename = $self->file->stringify;
+    confess "Can't read file " . $filename
+        unless -r $filename;
+
+    # strip the headers out of the lexicon hash
+    $self->headers;
 }
+
+=head2 add_entry
+
+Adds an entry to the translation file. Arguments are a hash, with valid keys
+being C<msgid> and C<msgstr>.
+
+=cut
 
 sub add_entry {
     my $self = shift;
-    if (@_ == 1) {
-        $self->_add_entry($_[0]);
-    }
-    else {
-        my %args = @_;
-        $args{"-$_"} = delete $args{$_} for keys %args;
-        $self->_add_entry(Locale::PO->new(%args));
-    }
-}
+    my %args = @_;
+    my ($msgid, $msgstr) = @args{qw(msgid msgstr)};
 
-=head2 entry_for
+    return if $self->has_msgid($msgid);
 
-Returns the L<Locale::PO> object corresponding to the given msgid.
+    my $needs_newline = ($self->file->slurp !~ /\n\n$/);
+    my $fh = $self->file->open('>>');
+    $fh->binmode(':utf8');
+    $fh->print(qq{\n}) if $needs_newline;
 
-=cut
+    $fh->print(qq{msgid "$msgid"\n});
+    $fh->print(qq{msgstr "$msgstr"\n}) if defined $msgstr;
+    $fh->print(qq{\n});
 
-sub entry_for {
-    my $self = shift;
-    my ($msgid) = @_;
-    return first { $_->msgid eq '"' . $msgid . '"' } $self->entries;
-}
-
-=head2 save
-
-Writes the current contents of the file back out to disk.
-
-=cut
-
-sub save {
-    my $self = shift;
-
-    Locale::PO->save_file_fromarray($self->file->stringify, [$self->entries]);
+    $self->_add_lexicon_entry($msgid => $msgstr);
 }
 
 =head2 language
@@ -223,8 +244,6 @@ sub add_stubs_from {
             defined($msgstr) ? (msgstr => $msgstr) : (),
         );
     }
-
-    $self->save;
 }
 
 __PACKAGE__->meta->make_immutable;
