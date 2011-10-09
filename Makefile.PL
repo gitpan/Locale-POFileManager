@@ -4,38 +4,56 @@ use warnings;
 
 
 
-use ExtUtils::MakeMaker 6.11;
+use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-                       'test' => {
-                                   'TESTS' => 't/*.t'
-                                 },
-                       'NAME' => 'Locale::POFileManager',
-                       'DISTNAME' => 'Locale-POFileManager',
-                       'AUTHOR' => 'Jesse Luehrs <doy at tozt dot net>',
-                       'ABSTRACT' => 'Helpers for keeping a set of related .po files in sync',
-                       'EXE_FILES' => [
-                                        'bin/po_find_missing',
-                                        'bin/po_add_stubs'
-                                      ],
-                       'VERSION' => '0.03',
-                       'LICENSE' => 'perl',
-                       'PREREQ_PM' => {
-                                        'Scalar::Util' => '0',
-                                        'MooseX::Types::Path::Class' => '0',
-                                        'Locale::Maketext::Lexicon' => '0',
-                                        'ExtUtils::MakeMaker' => '6.11',
-                                        'File::Temp' => '0.19',
-                                        'List::MoreUtils' => '0',
-                                        'Moose' => '0.90'
-                                      }
-                     );
+  "ABSTRACT" => "Helpers for keeping a set of related .po files in sync",
+  "AUTHOR" => "Jesse Luehrs <doy at tozt dot net>",
+  "BUILD_REQUIRES" => {
+    "Test::More" => "0.88"
+  },
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
+  },
+  "DISTNAME" => "Locale-POFileManager",
+  "EXE_FILES" => [
+    "bin/po_find_missing",
+    "bin/po_add_stubs"
+  ],
+  "LICENSE" => "perl",
+  "NAME" => "Locale::POFileManager",
+  "PREREQ_PM" => {
+    "File::Temp" => "0.19",
+    "List::MoreUtils" => 0,
+    "Locale::Maketext::Lexicon" => 0,
+    "Moose" => "0.90",
+    "MooseX::Types::Path::Class" => 0,
+    "Scalar::Util" => 0
+  },
+  "VERSION" => "0.04",
+  "test" => {
+    "TESTS" => "t/*.t"
+  }
+);
 
 
-delete $WriteMakefileArgs{LICENSE}
-  unless eval { ExtUtils::MakeMaker->VERSION(6.31) };
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
 WriteMakefile(%WriteMakefileArgs);
 

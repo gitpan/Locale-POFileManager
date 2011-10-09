@@ -1,72 +1,13 @@
 package Locale::POFileManager;
-our $VERSION = '0.03';
+{
+  $Locale::POFileManager::VERSION = '0.04';
+}
 use Moose;
 use MooseX::Types::Path::Class qw(Dir);
 use Scalar::Util qw(reftype weaken);
+# ABSTRACT: Helpers for keeping a set of related .po files in sync
 
-=head1 NAME
 
-Locale::POFileManager - Helpers for keeping a set of related .po files in sync
-
-=head1 VERSION
-
-version 0.03
-
-=head1 SYNOPSIS
-
-  use Locale::POFileManager;
-
-  my $manager = Locale::POFileManager->new(
-      base_dir           => '/path/to/app/i18n/po',
-      canonical_language => 'en',
-  );
-
-  my %missing = $manager->find_missing;
-  $manager->add_stubs;
-  $manager->add_language('de');
-
-=head1 DESCRIPTION
-
-This module contains helpers for managing a set of gettext translation files,
-including tools to keep the translation files in sync, adding new translation
-files, and manipulating the translations contained in the files. It is based on
-the L<Locale::Maketext::Lexicon> parser library.
-
-=cut
-
-=head1 METHODS
-
-=head2 new
-
-Accepts a hash of arguments:
-
-=over 4
-
-=item base_dir
-
-The directory that contains the .po files. Required.
-
-=item canonical_language
-
-The language for the file that contains the canonical set of msgids. Required.
-
-=item stub_msgstr
-
-The msgstr to insert when adding stubs to language files. This can be either a
-literal string, or a coderef which accepts a hash containing the keys C<msgid>,
-C<lang>, and C<canonical_msgstr> (the msgstr value from the
-C<canonical_language>. Optional.
-
-=back
-
-=cut
-
-=head2 base_dir
-
-Returns a L<Path::Class::Dir> object corresponding to the C<base_dir> passed to
-the constructor.
-
-=cut
 
 has base_dir => (
     is       => 'ro',
@@ -75,12 +16,6 @@ has base_dir => (
     coerce   => 1,
 );
 
-=head2 files
-
-Returns a list of L<Locale::POFileManager::File> objects corresponding to the
-.po files that were found in the C<base_dir>.
-
-=cut
 
 has files => (
     traits     => [qw(Array)],
@@ -115,11 +50,6 @@ sub _build_files {
     return \@files;
 }
 
-=head2 canonical_language
-
-Returns the canonical language id passed to the constructor.
-
-=cut
 
 has canonical_language => (
     is       => 'ro',
@@ -140,13 +70,6 @@ sub BUILD {
         unless $self->has_language($self->canonical_language);
 }
 
-=head2 stub_msgstr
-
-Returns the string passed to the constructor as C<stub_msgstr> if it was a
-string, or a coderef wrapped to supply the C<canonical_msgstr> option if it was
-a coderef.
-
-=cut
 
 sub stub_msgstr {
     my $self = shift;
@@ -168,12 +91,6 @@ sub stub_msgstr {
     }
 }
 
-=head2 has_language
-
-Returns true if a language file exists for the given language in the
-C<base_dir>, false otherwise.
-
-=cut
 
 sub has_language {
     my $self = shift;
@@ -186,13 +103,6 @@ sub has_language {
     return;
 }
 
-=head2 add_language
-
-Creates a new language file for the language passed in as an argument. Creates
-a header for that file copied over from the header in the C<canonical_language>
-language file, and saves the newly created file in the C<base_dir>.
-
-=cut
 
 sub add_language {
     my $self = shift;
@@ -228,12 +138,6 @@ sub add_language {
     $self->_add_file($pofile);
 }
 
-=head2 language_file
-
-Returns the L<Locale::POFileManager::File> object corresponding to the given
-language.
-
-=cut
 
 sub language_file {
     my $self = shift;
@@ -244,25 +148,12 @@ sub language_file {
     });
 }
 
-=head2 canonical_language_file
-
-Returns the L<Locale::POFileManager::File> object corresponding to the
-C<canonical_language>.
-
-=cut
 
 sub canonical_language_file {
     my $self = shift;
     return $self->language_file($self->canonical_language);
 }
 
-=head2 find_missing
-
-Searches through all of the files in the C<base_dir>, and returns a hash
-mapping language names to an arrayref of msgids that were found in the
-C<canonical_language> file but not in the file for that language.
-
-=cut
 
 sub find_missing {
     my $self = shift;
@@ -276,13 +167,6 @@ sub find_missing {
     return %ret;
 }
 
-=head2 add_stubs
-
-Adds stub msgid (and possibly msgstr, if the C<stub_msgstr> option was given)
-entries to each language file for each msgid found in the C<canonical_language>
-file but not in the language file.
-
-=cut
 
 sub add_stubs {
     my $self = shift;
@@ -295,6 +179,118 @@ sub add_stubs {
 
 __PACKAGE__->meta->make_immutable;
 no Moose;
+
+
+1;
+
+__END__
+=pod
+
+=head1 NAME
+
+Locale::POFileManager - Helpers for keeping a set of related .po files in sync
+
+=head1 VERSION
+
+version 0.04
+
+=head1 SYNOPSIS
+
+  use Locale::POFileManager;
+
+  my $manager = Locale::POFileManager->new(
+      base_dir           => '/path/to/app/i18n/po',
+      canonical_language => 'en',
+  );
+
+  my %missing = $manager->find_missing;
+  $manager->add_stubs;
+  $manager->add_language('de');
+
+=head1 DESCRIPTION
+
+This module contains helpers for managing a set of gettext translation files,
+including tools to keep the translation files in sync, adding new translation
+files, and manipulating the translations contained in the files. It is based on
+the L<Locale::Maketext::Lexicon> parser library.
+
+=head1 METHODS
+
+=head2 new
+
+Accepts a hash of arguments:
+
+=over 4
+
+=item base_dir
+
+The directory that contains the .po files. Required.
+
+=item canonical_language
+
+The language for the file that contains the canonical set of msgids. Required.
+
+=item stub_msgstr
+
+The msgstr to insert when adding stubs to language files. This can be either a
+literal string, or a coderef which accepts a hash containing the keys C<msgid>,
+C<lang>, and C<canonical_msgstr> (the msgstr value from the
+C<canonical_language>. Optional.
+
+=back
+
+=head2 base_dir
+
+Returns a L<Path::Class::Dir> object corresponding to the C<base_dir> passed to
+the constructor.
+
+=head2 files
+
+Returns a list of L<Locale::POFileManager::File> objects corresponding to the
+.po files that were found in the C<base_dir>.
+
+=head2 canonical_language
+
+Returns the canonical language id passed to the constructor.
+
+=head2 stub_msgstr
+
+Returns the string passed to the constructor as C<stub_msgstr> if it was a
+string, or a coderef wrapped to supply the C<canonical_msgstr> option if it was
+a coderef.
+
+=head2 has_language
+
+Returns true if a language file exists for the given language in the
+C<base_dir>, false otherwise.
+
+=head2 add_language
+
+Creates a new language file for the language passed in as an argument. Creates
+a header for that file copied over from the header in the C<canonical_language>
+language file, and saves the newly created file in the C<base_dir>.
+
+=head2 language_file
+
+Returns the L<Locale::POFileManager::File> object corresponding to the given
+language.
+
+=head2 canonical_language_file
+
+Returns the L<Locale::POFileManager::File> object corresponding to the
+C<canonical_language>.
+
+=head2 find_missing
+
+Searches through all of the files in the C<base_dir>, and returns a hash
+mapping language names to an arrayref of msgids that were found in the
+C<canonical_language> file but not in the file for that language.
+
+=head2 add_stubs
+
+Adds stub msgid (and possibly msgstr, if the C<stub_msgstr> option was given)
+entries to each language file for each msgid found in the C<canonical_language>
+file but not in the language file.
 
 =head1 BUGS
 
@@ -340,17 +336,18 @@ L<http://search.cpan.org/dist/Locale-POFileManager>
 
 =back
 
+=for Pod::Coverage BUILD
+
 =head1 AUTHOR
 
-  Jesse Luehrs <doy at tozt dot net>
+Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Jesse Luehrs.
+This software is copyright (c) 2011 by Jesse Luehrs.
 
 This is free software; you can redistribute it and/or modify it under
-the same terms as perl itself.
+the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-1;
