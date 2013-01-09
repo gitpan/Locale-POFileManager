@@ -1,8 +1,11 @@
 package Locale::POFileManager;
-{
-  $Locale::POFileManager::VERSION = '0.04';
+BEGIN {
+  $Locale::POFileManager::AUTHORITY = 'cpan:DOY';
 }
-use Moose;
+{
+  $Locale::POFileManager::VERSION = '0.05';
+}
+use Moose 0.90;
 use MooseX::Types::Path::Class qw(Dir);
 use Scalar::Util qw(reftype weaken);
 # ABSTRACT: Helpers for keeping a set of related .po files in sync
@@ -184,6 +187,7 @@ no Moose;
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -192,7 +196,7 @@ Locale::POFileManager - Helpers for keeping a set of related .po files in sync
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 
@@ -344,10 +348,9 @@ Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Jesse Luehrs.
+This software is copyright (c) 2013 by Jesse Luehrs.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

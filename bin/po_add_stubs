@@ -23,6 +23,7 @@ my $manager = Locale::POFileManager->new(
 $manager->add_stubs;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -31,7 +32,7 @@ po_add_stubs - add stubs for missing msgids to a set of po files
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 
@@ -43,10 +44,9 @@ Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Jesse Luehrs.
+This software is copyright (c) 2013 by Jesse Luehrs.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

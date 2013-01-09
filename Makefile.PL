@@ -12,27 +12,35 @@ my %WriteMakefileArgs = (
   "ABSTRACT" => "Helpers for keeping a set of related .po files in sync",
   "AUTHOR" => "Jesse Luehrs <doy at tozt dot net>",
   "BUILD_REQUIRES" => {
-    "Test::More" => "0.88"
+    "File::Copy" => 0,
+    "File::Find" => 0,
+    "File::Temp" => "0.19",
+    "Path::Class" => 0,
+    "Test::More" => "0.88",
+    "utf8" => 0
   },
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
   "DISTNAME" => "Locale-POFileManager",
   "EXE_FILES" => [
-    "bin/po_find_missing",
-    "bin/po_add_stubs"
+    "bin/po_add_stubs",
+    "bin/po_find_missing"
   ],
   "LICENSE" => "perl",
   "NAME" => "Locale::POFileManager",
   "PREREQ_PM" => {
-    "File::Temp" => "0.19",
     "List::MoreUtils" => 0,
+    "List::Util" => 0,
     "Locale::Maketext::Lexicon" => 0,
+    "Locale::Maketext::Lexicon::Gettext" => 0,
     "Moose" => "0.90",
     "MooseX::Types::Path::Class" => 0,
-    "Scalar::Util" => 0
+    "Scalar::Util" => 0,
+    "strict" => 0,
+    "warnings" => 0
   },
-  "VERSION" => "0.04",
+  "VERSION" => "0.05",
   "test" => {
     "TESTS" => "t/*.t"
   }
